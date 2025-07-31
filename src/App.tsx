@@ -5,8 +5,8 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
-import { DashboardPage } from "@/pages/DashboardPage";
 import VerifyEmail from "@/pages/VerifyEmail";
+import Dashboard from "@/layout/Dashboard/Dashboard";
 
 const App = () => {
   return (
@@ -54,7 +54,8 @@ const App = () => {
             path="/dashboard"
             element={
               <AuthGuard requireAuth={true}>
-                <DashboardPage />
+                {/* <DashboardPage /> */}
+                <Dashboard />
               </AuthGuard>
             }
           />

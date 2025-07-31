@@ -1,7 +1,8 @@
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/Alert";
 
 import { useRegister, type RegisterFormData } from "@/hooks/useRegister";
@@ -55,50 +56,72 @@ export const RegisterPage = () => {
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              label="Full Name"
-              type="text"
-              autoComplete="name"
-              placeholder="Enter your full name"
-              error={errors.displayName?.message}
-              {...register("displayName", {
-                required: "Full name is required",
-                minLength: {
-                  value: 2,
-                  message: "Name must be at least 2 characters",
-                },
-              })}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="displayName">Full Name</Label>
+              <Input
+                id="displayName"
+                type="text"
+                autoComplete="name"
+                placeholder="Enter your full name"
+                className={errors.displayName ? "border-red-500" : ""}
+                {...register("displayName", {
+                  required: "Full name is required",
+                  minLength: {
+                    value: 2,
+                    message: "Name must be at least 2 characters",
+                  },
+                })}
+              />
+              {errors.displayName && (
+                <p className="text-sm text-red-500">
+                  {errors.displayName.message}
+                </p>
+              )}
+            </div>
 
-            <Input
-              label="Email address"
-              type="email"
-              autoComplete="email"
-              placeholder="Enter your email"
-              error={errors.email?.message}
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
-              })}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="Enter your email"
+                className={errors.email ? "border-red-500" : ""}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
+            </div>
 
-            <Input
-              label="Password"
-              type="password"
-              autoComplete="new-password"
-              placeholder="Enter your password"
-              error={errors.password?.message}
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                placeholder="Enter your password"
+                className={errors.password ? "border-red-500" : ""}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
             <div className="text-xs text-gray-600">
               <p>
@@ -111,7 +134,6 @@ export const RegisterPage = () => {
               type="submit"
               className="w-full flex gap-2 items-center justify-center"
               size="lg"
-              isLoading={isLoading}
               disabled={isLoading || success}
             >
               {isLoading ? "Creating account..." : "Create account"}

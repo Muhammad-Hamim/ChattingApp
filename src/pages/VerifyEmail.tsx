@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/Alert";
 import { deleteUserAccount, logoutUser } from "@/services/authService";
 import {
@@ -24,7 +24,20 @@ const VerifyEmail = () => {
   const { user, error } = useAppSelector((state: RootState) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // Get registration mutation but don't destructure to avoid automatic error handling
   const [registration] = useRegistrationMutation();
+
+  // Clear any existing errors when component mounts
+  useEffect(() => {
+    dispatch(clearError());
+    console.log(
+      "VerifyEmail mounted - User:",
+      user,
+      "Firebase user:",
+      auth.currentUser
+    );
+  }, [dispatch, user]);
 
   // Get current user from Firebase if Redux user is not available
   const currentUser = user || auth.currentUser;
@@ -46,35 +59,52 @@ const VerifyEmail = () => {
         await user.reload();
 
         if (user.emailVerified) {
-          // Update user in Redux store with verified status
+          // Only register on server if email is verified
           const userData: TUserData = {
             email: user.email as string,
             name: user.displayName as string,
             lastLogin: new Date(),
             uid: user.uid,
           };
-          const response = await registration({ userData }).unwrap();
-          if (!response.data._id) {
-            await deleteUserAccount(user.uid);
+
+          try {
+            const response = await registration({ userData }).unwrap();
+            if (!response.data._id) {
+              await deleteUserAccount(user.uid);
+              dispatch(
+                setError("Failed to create user account. Please try again.")
+              );
+              navigate("/register");
+              return;
+            }
+
             dispatch(
-              setError("Failed to create user account. Please try again.")
+              setUser({
+                uid: user.uid,
+                email: user.email!,
+                displayName: user.displayName,
+                photoURL: user.photoURL,
+                emailVerified: user.emailVerified,
+              })
             );
-            navigate("/register");
+
+            // Show success message before redirect
+            setResendSuccess(true);
+            setTimeout(() => {
+              navigate("/dashboard");
+            }, 1000);
+          } catch (serverError) {
+            console.error("Server registration error:", serverError);
+            dispatch(
+              setError(
+                `Registration failed: ${
+                  serverError instanceof Error
+                    ? serverError.message
+                    : "Server error"
+                }`
+              )
+            );
           }
-          dispatch(
-            setUser({
-              uid: user.uid,
-              email: user.email!,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-              emailVerified: user.emailVerified,
-            })
-          );
-          // Show success message before redirect
-          setResendSuccess(true);
-          setTimeout(() => {
-            navigate("/dashboard");
-          }, 1000);
         } else {
           dispatch(
             setError(
@@ -82,10 +112,17 @@ const VerifyEmail = () => {
             )
           );
         }
+      } else {
+        dispatch(setError("No user found. Please try logging in again."));
       }
-    } catch {
+    } catch (error) {
+      console.error("Verification check error:", error);
       dispatch(
-        setError("Failed to check verification status. Please try again.")
+        setError(
+          `Failed to check verification status: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`
+        )
       );
     } finally {
       setIsChecking(false);
@@ -195,7 +232,6 @@ const VerifyEmail = () => {
 
               <Button
                 onClick={handleCheckVerification}
-                isLoading={isChecking}
                 disabled={isChecking}
                 className="w-full mb-4"
               >
@@ -216,7 +252,6 @@ const VerifyEmail = () => {
               <Button
                 onClick={handleResendVerification}
                 variant="outline"
-                isLoading={isResending}
                 disabled={isResending}
                 className="w-full mb-4"
               >

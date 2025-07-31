@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Alert } from "@/components/ui/Alert";
 import { loginUser } from "@/services/authService";
 import { useUpdateLastLoginMutation } from "@/redux/auth/authApi";
@@ -103,35 +104,49 @@ export const LoginPage = () => {
           )}
 
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              label="Email address"
-              type="email"
-              autoComplete="email"
-              placeholder="Enter your email"
-              error={errors.email?.message}
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
-                },
-              })}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                placeholder="Enter your email"
+                className={errors.email ? "border-red-500" : ""}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Invalid email address",
+                  },
+                })}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
+            </div>
 
-            <Input
-              label="Password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="Enter your password"
-              error={errors.password?.message}
-              {...register("password", {
-                required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
-              })}
-            />
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                autoComplete="current-password"
+                placeholder="Enter your password"
+                className={errors.password ? "border-red-500" : ""}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
             <div className="flex items-center justify-between">
               <div className="text-sm">
@@ -148,7 +163,6 @@ export const LoginPage = () => {
               type="submit"
               className="w-full flex gap-2 items-center justify-center"
               size="lg"
-              isLoading={isLoading}
               disabled={isLoading || success}
             >
               {isLoading ? "Signing in..." : "Sign in"}
