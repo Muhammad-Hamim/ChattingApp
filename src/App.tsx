@@ -54,7 +54,16 @@ const App = () => {
             path="/dashboard"
             element={
               <AuthGuard requireAuth={true}>
-                {/* <DashboardPage /> */}
+                <Dashboard />
+              </AuthGuard>
+            }
+          />
+
+          {/* Chat route - separate from dashboard nesting */}
+          <Route
+            path="/dashboard/chat/:conversationId"
+            element={
+              <AuthGuard requireAuth={true}>
                 <Dashboard />
               </AuthGuard>
             }

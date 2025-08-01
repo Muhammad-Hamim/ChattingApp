@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useGetConversationByIdQuery } from "@/redux/conversations/conversationsApi";
 import {
   Phone,
   Video,
@@ -18,23 +19,26 @@ import {
   Shield,
   Ban,
 } from "lucide-react";
+import moment from "moment";
+import { useParams } from "react-router";
 
-interface ChatHeaderProps {
-  name: string;
-  avatar?: string;
-  online?: boolean;
-  lastSeen?: string;
-}
-
-const ChatHeader = ({ name, avatar, online, lastSeen }: ChatHeaderProps) => {
+const ChatHeader = () => {
+  const { conversationId } = useParams();
+  const { data: conversation } = useGetConversationByIdQuery(
+    conversationId as string
+  );
+  console.log(conversation);
+  const currentConversation = conversation?.data;
+  const online = true;
+  const lastSeen = moment().startOf("hour").fromNow();
   return (
     <div className="bg-[#202c33] px-4 py-3 flex items-center justify-between border-b border-[#3c464e]">
       <div className="flex items-center space-x-3">
         <div className="relative">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={avatar} alt={name} />
+            <AvatarImage src="" alt={currentConversation?.participants?.name} />
             <AvatarFallback className="bg-[#54656f] text-white">
-              {name.charAt(0).toUpperCase()}
+              {currentConversation?.participants?.name.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           {online && (
@@ -42,7 +46,9 @@ const ChatHeader = ({ name, avatar, online, lastSeen }: ChatHeaderProps) => {
           )}
         </div>
         <div>
-          <h2 className="text-white font-medium">{name}</h2>
+          <h2 className="text-white font-medium">
+            {currentConversation?.participants?.name}
+          </h2>
           <p className="text-[#aebac1] text-sm">
             {online ? "online" : lastSeen ? `last seen ${lastSeen}` : "offline"}
           </p>

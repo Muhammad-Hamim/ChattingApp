@@ -5,30 +5,11 @@ import ChatContent from "./ChatContent";
 import MessageInput from "./MessageInput";
 
 interface SingleChatProps {
-  selectedChat: number | null;
   onBack?: () => void;
 }
 
-const SingleChat = ({ selectedChat, onBack }: SingleChatProps) => {
-  // Demo current chat data
-  const currentChat = {
-    name: "John Doe",
-    avatar: "/avatars/john.jpg",
-    online: true,
-    lastSeen: "today at 12:41 am",
-  };
-
-  if (!selectedChat) {
-    return (
-      <div className="flex-1 bg-[#0b141a] flex items-center justify-center">
-        <div className="text-center text-[#aebac1]">
-          <h2 className="text-xl font-medium mb-2">WhatsApp Web</h2>
-          <p>Select a chat to start messaging</p>
-        </div>
-      </div>
-    );
-  }
-
+const SingleChat = ({ onBack }: SingleChatProps) => {
+  
   return (
     <div className="flex-1 flex flex-col h-full bg-[#0b141a]">
       {/* Mobile Back Button */}
@@ -46,7 +27,7 @@ const SingleChat = ({ selectedChat, onBack }: SingleChatProps) => {
         </div>
       )}
 
-      <ChatHeader {...currentChat} />
+      <ChatHeader />
       <ChatContent />
       <MessageInput />
     </div>

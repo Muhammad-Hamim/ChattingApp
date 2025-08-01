@@ -1,12 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import SideBar from "./sidebar/SideBar";
 import ChatLists from "./chatlists/ChatLists";
 import SingleChat from "./singlechat/SingleChat";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { setCurrentConversation } from "@/redux/conversations/conversationsSlice";
+import { useParams, useNavigate } from "react-router";
+import WelcomeText from "@/layout/Dashboard/singlechat/WelcomeText";
 
 const Dashboard = () => {
-  const [selectedChat, setSelectedChat] = useState<number | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const selectedChat = useAppSelector(
+    (state) => state.conversations.currentConversation?._id
+  );
+  const { conversationId } = useParams<{ conversationId: string }>();
+
+  // Sync URL params with Redux state
+  useEffect(() => {
+    if (conversationId) {
+      dispatch(setCurrentConversation(conversationId));
+    } else {
+      dispatch(setCurrentConversation(null));
+    }
+  }, [conversationId, dispatch]);
+
+  const handleBackToChats = () => {
+    dispatch(setCurrentConversation(null));
+    navigate("/dashboard");
+  };
 
   return (
     <div className="h-screen bg-[#0b141a] flex">
@@ -14,18 +37,15 @@ const Dashboard = () => {
       <div className="hidden lg:flex w-full">
         <SideBar />
         <div className="flex flex-1 min-w-0">
-          <ChatLists
-            selectedChat={selectedChat}
-            onChatSelect={setSelectedChat}
-          />
-          <SingleChat selectedChat={selectedChat} />
+          <ChatLists />
+          {conversationId ? <SingleChat /> : <WelcomeText />}
         </div>
       </div>
 
       {/* Tablet Layout */}
       <div className="hidden md:flex lg:hidden w-full">
-        <ChatLists selectedChat={selectedChat} onChatSelect={setSelectedChat} />
-        <SingleChat selectedChat={selectedChat} />
+        <ChatLists />
+        {conversationId ? <SingleChat /> : <WelcomeText />}
       </div>
 
       {/* Mobile Layout */}
@@ -43,18 +63,11 @@ const Dashboard = () => {
             </Sheet>
 
             {/* Mobile Chat List */}
-            <ChatLists
-              selectedChat={selectedChat}
-              onChatSelect={setSelectedChat}
-              onAvatarClick={() => setSidebarOpen(true)}
-            />
+            <ChatLists onAvatarClick={() => setSidebarOpen(true)} />
           </div>
         ) : (
           /* Mobile Single Chat */
-          <SingleChat
-            selectedChat={selectedChat}
-            onBack={() => setSelectedChat(null)}
-          />
+          <SingleChat onBack={handleBackToChats} />
         )}
       </div>
     </div>

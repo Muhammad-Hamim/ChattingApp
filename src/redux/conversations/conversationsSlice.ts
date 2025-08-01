@@ -1,12 +1,23 @@
+import type { TConversation } from "@/types";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {};
+type TInitialState = {
+  currentConversation: TConversation | null;
+};
+
+const initialState: TInitialState = {
+  currentConversation: null,
+};
 
 const conversationsSlice = createSlice({
   name: "conversations",
   initialState,
-  reducers: {},
+  reducers: {
+    setCurrentConversation: (state, action) => {
+      state.currentConversation = action.payload;
+    },
+  },
 });
 
-export const {} = conversationsSlice.actions;
+export const { setCurrentConversation } = conversationsSlice.actions;
 export default conversationsSlice.reducer;
