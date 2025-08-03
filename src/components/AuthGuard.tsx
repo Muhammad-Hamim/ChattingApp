@@ -5,6 +5,7 @@ import { setUser, setLoading } from "@/redux/auth/authSlice";
 import type { ReactNode } from "react";
 import { useAppDispatch } from "@/redux/hooks";
 import { auth } from "@/config/firebase";
+import { connectSocket } from "@/socket/socket";
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -23,7 +24,7 @@ export const AuthGuard = ({ children, requireAuth = true }: AuthGuardProps) => {
 
   useEffect(() => {
     dispatch(setLoading(true));
-    const unsubscribe = onAuthStateChange((user) => {
+    const unsubscribe = onAuthStateChange(async (user) => {
       dispatch(setUser(user));
       dispatch(setLoading(false));
       console.log("Auth Guard - Access Token:", accessToken());
@@ -31,6 +32,9 @@ export const AuthGuard = ({ children, requireAuth = true }: AuthGuardProps) => {
       if (requireAuth && !user) {
         navigate("/login");
       } else if (user && user.emailVerified) {
+        console.log("🚀 AuthGuard: Connecting socket for:", user.email);
+        await connectSocket();
+
         // Only navigate to dashboard if user is on a public route or root
         const currentPath = location.pathname;
         const publicRoutes = ["/", "/login", "/register"];

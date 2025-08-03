@@ -19,8 +19,7 @@ export type TConversation = {
     status: "blocked" | "unblocked";
     blockedBy: string;
   };
-  lastMessage?: {
-    _id: string;
+  last_message?: {
     sender_name: string;
     sender_email: string;
     type: "text" | "image";
@@ -31,10 +30,11 @@ export type TConversation = {
   updatedAt: Date;
 };
 const ChatCard = (conversation: TConversation) => {
-  const { participants, lastMessage, type, updatedAt } = conversation;
+  const { participants, last_message, type, updatedAt } = conversation;
   const { currentConversation } = useAppSelector(
     (state) => state.conversations
   );
+  console.log("last message", last_message);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [online] = useState(true);
@@ -77,10 +77,12 @@ const ChatCard = (conversation: TConversation) => {
         </div>
         <div className="flex items-center justify-between mt-1">
           <p className="text-[#aebac1] text-sm truncate flex-1 mr-2">
-            {lastMessage ? (
-              lastMessage.type === "text" ? (
-                <span className="truncate block">{lastMessage.content}</span>
-              ) : lastMessage.type === "image" ? (
+            {last_message ? (
+              last_message.type === "text" ? (
+                <span className="truncate block">
+                  {last_message.sender_name}: {last_message.content}
+                </span>
+              ) : last_message.type === "image" ? (
                 <span className="flex items-center">
                   <MdInsertPhoto className="mr-1" />
                   Photo
