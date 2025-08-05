@@ -19,7 +19,7 @@ const ChatLists = ({ onAvatarClick }: ChatListsProps) => {
 
 
   return (
-    <div className="w-full md:w-80 lg:w-96 bg-[#111b21] border-r border-[#3c464e] flex flex-col h-full">
+    <div className="w-full md:w-80 lg:w-96 bg-[#161717] border-r border-[#3c464e] flex flex-col h-full">
       <Header onAvatarClick={onAvatarClick} />
       <SearchBar />
       <ChatFilter />

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 const ChatFilter = () => {
   return (
-    <div className="bg-[#111b21] px-4 py-2 border-b border-[#3c464e]">
+    <div className="bg-[#161717] px-4 py-2 border-b border-[#3c464e]">
       <div className="flex space-x-2">
         <Button
           variant="secondary"

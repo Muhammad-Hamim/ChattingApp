@@ -5,6 +5,10 @@ import { toast } from "sonner";
 export const socket = io("http://localhost:5000", {
   autoConnect: false,
   transports: ["websocket", "polling"],
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionAttempts: 5,
+  forceNew: false,
 });
 
 export const connectSocket = async () => {
@@ -48,6 +52,7 @@ socket.on("welcome", (data) => {
   toast.success(`Welcome ${data.name}`, {
     description: `${data.message}.
       socket Id: ${data.socketId}`,
+    position: "top-center",
     action: {
       label: "Undo",
       onClick: () => console.log("Undo"),
@@ -66,3 +71,27 @@ socket.on("user_connected", (data) => {
 socket.on("user_disconnected", (data) => {
   console.log("👋 User disconnected:", data);
 });
+
+
+
+// Add event listeners for browser/tab close
+window.addEventListener("beforeunload", () => {
+  if (socket.connected) {
+    socket.disconnect();
+    console.log("🔌 Socket disconnected before unload");
+  }
+});
+window.addEventListener("unload", () => {
+  if (socket.connected) {
+    socket.disconnect();
+    console.log("🔌 Socket disconnected on unload");
+  }
+});
+
+// Handle page visibility changes (tab switching)
+// document.addEventListener("visibilitychange", () => {
+//   if (socket.connected) {
+//     socket.disconnect();
+//     console.log("🔌 Socket disconnected on visibility change");
+//   }
+// });

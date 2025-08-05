@@ -27,18 +27,18 @@ const Header = ({ onAvatarClick }: HeaderProps) => {
   const { user } = useAppSelector((state: RootState) => state.auth);
 
   return (
-    <div className="bg-[#202c33] px-4 py-3 flex items-center justify-between border-b border-[#3c464e]">
+    <div className="bg-[#161717] px-4 py-3 flex items-center justify-between border-b border-[#3c464e]">
       <div className="flex items-center space-x-3">
         <Avatar
           className="h-8 w-8 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={onAvatarClick}
         >
           <AvatarImage
-            src={user?.photoURL || undefined}
-            alt={user?.displayName || user?.email || "User"}
+            src=""
+            alt={user?.name || user?.email || "User"}
           />
           <AvatarFallback className="bg-[#54656f] text-white text-xs">
-            {(user?.displayName?.[0] || user?.email?.[0] || "U").toUpperCase()}
+            {(user?.name?.[0] || user?.email?.[0] || "U").toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <h1 className="text-white font-medium">Chats</h1>

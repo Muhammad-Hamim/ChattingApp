@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { useState } from "react";
 import { setCurrentConversation } from "@/redux/conversations/conversationsSlice";
 import moment from "moment";
 import gravatarUrl from "gravatar-url";
@@ -13,7 +12,10 @@ export type TConversation = {
   status: "pending" | "accepted" | "rejected";
   participants?: {
     name: string;
+    uid: string;
     email: string;
+    status: "online" | "offline";
+    lastSeen: Date;
   };
   blocked_details?: {
     status: "blocked" | "unblocked";
@@ -34,19 +36,17 @@ const ChatCard = (conversation: TConversation) => {
   const { currentConversation } = useAppSelector(
     (state) => state.conversations
   );
-  console.log("last message", last_message);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [online] = useState(true);
   const handleOpenConversation = () => {
     dispatch(setCurrentConversation(conversation));
     navigate(`/dashboard/chat/${conversation._id}`);
   };
   return (
     <div
-      className={`flex items-center space-x-3 p-3 hover:bg-[#202c33] cursor-pointer transition-colors ${
+      className={`flex items-center space-x-3 p-3 hover:bg-[#2e2f2f] cursor-pointer transition-colors ${
         (currentConversation?._id as string) === conversation._id
-          ? "bg-[#202c33]"
+          ? "bg-[#2e2f2f]"
           : ""
       }`}
       onClick={handleOpenConversation}
@@ -61,7 +61,7 @@ const ChatCard = (conversation: TConversation) => {
             {participants?.name.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
-        {online && type !== "GROUP" && (
+        {participants?.status === "online" && type !== "GROUP" && (
           <div className="absolute bottom-0 right-1 w-3 h-3 bg-[#00a884] rounded-full border-2 border-[#111b21]"></div>
         )}
       </div>

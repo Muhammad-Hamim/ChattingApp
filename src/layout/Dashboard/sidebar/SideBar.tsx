@@ -37,16 +37,16 @@ const SideBar = () => {
   };
 
   return (
-    <div className="w-16 bg-[#202c33] border-r border-[#3c464e] flex flex-col items-center py-4 space-y-4">
+    <div className="w-16 bg-[#1d1f1f] border-r border-[#3c464e] flex flex-col items-center py-4 space-y-4">
       {/* User Profile */}
       <div className="relative">
         <Avatar className="h-10 w-10 border-2 border-[#3c464e]">
           <AvatarImage
-            src={user?.photoURL || undefined}
-            alt={user?.displayName || user?.email || "User"}
+            src=""
+            alt={user?.name as string}
           />
           <AvatarFallback className="bg-[#54656f] text-white text-sm">
-            {(user?.displayName?.[0] || user?.email?.[0] || "U").toUpperCase()}
+            {(user?.name?.[0] || user?.email?.[0] || "U").toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="absolute bottom-0 right-1 w-3 h-3 bg-[#00a884] rounded-full border-2 border-[#202c33]"></div>

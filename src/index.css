@@ -117,4 +117,188 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Custom scrollbar styles for message input */
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #4a4d52 transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #4a4d52;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #5a5d62;
+}
+
+/* Enhanced Emoji picker custom styles */
+.EmojiPickerReact {
+  --epr-bg-color: #2f3136 !important;
+  --epr-category-label-bg-color: #2f3136 !important;
+  --epr-search-input-bg-color: #40444b !important;
+  --epr-text-color: #dcddde !important;
+  --epr-search-border-color: #40444b !important;
+  --epr-category-navigation-button-color: #b9bbbe !important;
+  --epr-hover-bg-color: #40444b !important;
+  --epr-focus-bg-color: #40444b !important;
+  --epr-highlight-color: #00a884 !important;
+  --epr-search-input-text-color: #dcddde !important;
+  --epr-search-input-placeholder-color: #72767d !important;
+  --epr-preview-bg-color: #36393f !important;
+  --epr-preview-text-color: #dcddde !important;
+  --epr-preview-text-size: 14px !important;
+  --epr-preview-border-color: #40444b !important;
+  --epr-category-navigation-button-size: 24px !important;
+  --epr-emoji-size: 28px !important;
+  --epr-emoji-gap: 4px !important;
+  --epr-emoji-padding: 8px !important;
+  --epr-emoji-hover-color: #40444b !important;
+  --epr-skin-tone-picker-menu-color: #2f3136 !important;
+  border: 1px solid #40444b !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24) !important;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+.EmojiPickerReact .epr-search-container {
+  padding: 12px !important;
+  border-bottom: 1px solid #40444b !important;
+}
+
+.EmojiPickerReact .epr-search-container input {
+  color: #dcddde !important;
+  background-color: #40444b !important;
+  border: 1px solid #40444b !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+}
+
+.EmojiPickerReact .epr-search-container input::placeholder {
+  color: #72767d !important;
+}
+
+.EmojiPickerReact .epr-search-container input:focus {
+  border-color: #00a884 !important;
+  outline: none !important;
+}
+
+.EmojiPickerReact .epr-category-nav {
+  border-bottom: 1px solid #40444b !important;
+  padding: 8px !important;
+}
+
+.EmojiPickerReact .epr-category-nav button {
+  border-radius: 4px !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.EmojiPickerReact .epr-category-nav button:hover {
+  background-color: #40444b !important;
+}
+
+.EmojiPickerReact .epr-category-nav button.epr-cat-btn.epr-active {
+  background-color: #00a884 !important;
+}
+
+.EmojiPickerReact .epr-emoji-category-label {
+  color: #b9bbbe !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  padding: 16px 12px 8px !important;
+}
+
+.EmojiPickerReact .epr-emoji-list {
+  padding: 0 8px !important;
+}
+
+.EmojiPickerReact .epr-emoji {
+  border-radius: 4px !important;
+  transition: background-color 0.15s ease !important;
+}
+
+.EmojiPickerReact .epr-emoji:hover {
+  background-color: #40444b !important;
+}
+
+.EmojiPickerReact .epr-preview {
+  border-top: 1px solid #40444b !important;
+  padding: 12px !important;
+  background-color: #36393f !important;
+}
+
+.EmojiPickerReact .epr-preview-emoji {
+  font-size: 32px !important;
+}
+
+.EmojiPickerReact .epr-preview-name {
+  color: #dcddde !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  margin-bottom: 4px !important;
+}
+
+.EmojiPickerReact .epr-preview-shortcodes {
+  color: #b9bbbe !important;
+  font-size: 12px !important;
+  font-family: "Consolas", "Monaco", monospace !important;
+}
+
+.EmojiPickerReact .epr-skin-tones {
+  background-color: #2f3136 !important;
+  border: 1px solid #40444b !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.EmojiPickerReact .epr-skin-tone {
+  border-radius: 50% !important;
+  transition: transform 0.15s ease !important;
+}
+
+.EmojiPickerReact .epr-skin-tone:hover {
+  transform: scale(1.1) !important;
+}
+
+.EmojiPickerReact .epr-skin-tone.epr-active {
+  box-shadow: 0 0 0 2px #00a884 !important;
+}
+
+/* Scrollbar for emoji picker */
+.EmojiPickerReact .epr-body::-webkit-scrollbar {
+  width: 6px !important;
+}
+
+.EmojiPickerReact .epr-body::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.EmojiPickerReact .epr-body::-webkit-scrollbar-thumb {
+  background-color: #4a4d52 !important;
+  border-radius: 3px !important;
+  border: 1px solid transparent !important;
+  background-clip: content-box !important;
+}
+
+.EmojiPickerReact .epr-body::-webkit-scrollbar-thumb:hover {
+  background-color: #5a5d62 !important;
+}
+
+.EmojiPickerReact .epr-body {
+  scrollbar-width: thin !important;
+  scrollbar-color: #4a4d52 transparent !important;
+}
 }

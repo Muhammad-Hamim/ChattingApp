@@ -7,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setCurrentConversation } from "@/redux/conversations/conversationsSlice";
 import { useParams, useNavigate } from "react-router";
 import WelcomeText from "@/layout/Dashboard/singlechat/WelcomeText";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);

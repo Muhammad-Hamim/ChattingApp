@@ -1,3 +1,4 @@
+// ✅ UPDATED ChatHeader.tsx
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -7,7 +8,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useGetConversationByIdQuery } from "@/redux/conversations/conversationsApi";
 import {
   Phone,
   Video,
@@ -21,36 +21,72 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useParams } from "react-router";
+import { useEffect, useState } from "react";
+import { socket } from "@/socket/socket";
+import { auth } from "@/config/firebase";
+
+// User type
+export type TUser = {
+  uid: string;
+  name: string;
+  email: string;
+  status: "online" | "offline";
+  lastSeen: Date;
+  conversationId: string;
+};
 
 const ChatHeader = () => {
   const { conversationId } = useParams();
-  const { data: conversation } = useGetConversationByIdQuery(
-    conversationId as string
-  );
-  console.log(conversation);
-  const currentConversation = conversation?.data;
-  const online = true;
-  const lastSeen = moment().startOf("hour").fromNow();
+  const [currentUser, setCurrentUser] = useState<TUser | null>(null);
+
+  useEffect(() => {
+    if (!conversationId) return;
+
+    // Join conversation room
+    socket.emit("join-conversation", { conversationId });
+
+    // Listen to user-status-changed
+    const handleUserStatusChanged = (userData: TUser) => {
+      if (
+        userData.conversationId === conversationId &&
+        userData.uid !== auth?.currentUser?.uid // 🔥 Only set the OTHER participant
+      ) {
+        setCurrentUser(userData);
+      }
+    };
+
+    socket.on("user-status-changed", handleUserStatusChanged);
+
+    return () => {
+      socket.emit("leave-conversation", { conversationId });
+      socket.off("user-status-changed", handleUserStatusChanged);
+    };
+  }, [conversationId]);
+
   return (
-    <div className="bg-[#202c33] px-4 py-3 flex items-center justify-between border-b border-[#3c464e]">
+    <div className="bg-[#161717] px-4 py-3 flex items-center justify-between border-b border-[#3c464e]">
       <div className="flex items-center space-x-3">
         <div className="relative">
           <Avatar className="h-10 w-10">
-            <AvatarImage src="" alt={currentConversation?.participants?.name} />
+            <AvatarImage src="" alt={currentUser?.name} />
             <AvatarFallback className="bg-[#54656f] text-white">
-              {currentConversation?.participants?.name.charAt(0).toUpperCase()}
+              {currentUser?.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-          {online && (
-            <div className="absolute bottom-0 right-1 w-3 h-3 bg-[#00a884] rounded-full border-2 border-[#202c33]"></div>
+          {currentUser?.status === "online" && (
+            <div className="absolute bottom-0 right-1 w-3 h-3 bg-[#00a884] rounded-full border-2 border-[#161717] animate-pulse"></div>
           )}
         </div>
         <div>
-          <h2 className="text-white font-medium">
-            {currentConversation?.participants?.name}
-          </h2>
+          <h2 className="text-white font-medium">{currentUser?.name}</h2>
           <p className="text-[#aebac1] text-sm">
-            {online ? "online" : lastSeen ? `last seen ${lastSeen}` : "offline"}
+            {currentUser?.status === "online" ? (
+              <span className="text-[#00a884]">online</span>
+            ) : currentUser?.lastSeen ? (
+              `last seen ${moment(currentUser.lastSeen).fromNow()}`
+            ) : (
+              "offline"
+            )}
           </p>
         </div>
       </div>
