@@ -5,31 +5,38 @@ import MessageCard from "./MessageCard";
 import { useParams } from "react-router";
 import { useAppSelector } from "@/redux/hooks";
 import { useMessages } from "@/hooks/useMessages";
+import { auth } from "@/config/firebase";
+import ChatLoader from "@/components/loadingSkeleton/ChatLoader";
 
 const ChatContent = () => {
   const { conversationId } = useParams();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get both arrays from Redux store directly
-  const realMessages = useAppSelector((state) => state.messages.messages);
-  const optimisticMessages = useAppSelector(
-    (state) => state.messages.optimisticMessages
-  );
-  const loading = useAppSelector((state) => state.messages.loading);
-
+  const {
+    messages: realMessages,
+    optimisticMessages,
+    loading,
+  } = useAppSelector((state) => state.messages);
+  // Get current user ID
+  const currentUserId = auth.currentUser?.uid;
   // Initialize messages hook
   useMessages(conversationId);
 
-  // 🎯 Combine real + optimistic messages using useMemo
+  // 🎯 Only combine optimistic messages if current user is the sender
   const allMessages = useMemo(() => {
-    const combined = [...realMessages, ...optimisticMessages];
+    // Filter optimistic messages to only those sent by the current user
+    const myOptimisticMessages = optimisticMessages.filter(
+      (msg) => msg.sender?.uid === currentUserId
+    );
+    const combined = [...realMessages, ...myOptimisticMessages];
 
     // Sort by timestamp to maintain proper order
     return combined.sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     );
-  }, [realMessages, optimisticMessages]);
+  }, [realMessages, optimisticMessages, currentUserId]);
 
   // Auto-scroll when messages change
   useEffect(() => {
@@ -38,16 +45,7 @@ const ChatContent = () => {
 
   // Handle loading state
   if (loading) {
-    return (
-      <ScrollArea className="h-full w-full scrollbar-custom">
-        <div className="flex items-center justify-center h-full min-h-[400px] p-4">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#00a884] mx-auto mb-4"></div>
-            <p className="text-[#8696a0]">Loading messages...</p>
-          </div>
-        </div>
-      </ScrollArea>
-    );
+    return <ChatLoader />;
   }
 
   return (

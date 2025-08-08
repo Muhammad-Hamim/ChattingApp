@@ -1,3 +1,4 @@
+import { auth } from "@/config/firebase";
 import type { TMessage } from "@/types/message";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
@@ -5,6 +6,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 type TInitialState = {
   messages: TMessage[];
   loading: boolean;
+  isTyping: boolean;
   error: string | null;
   hasMoreMessages: boolean; // For pagination
   optimisticMessages: (TMessage & { tempId?: string })[];
@@ -14,6 +16,7 @@ const initialState: TInitialState = {
   messages: [],
   loading: false,
   error: null,
+  isTyping: false,
   hasMoreMessages: true,
   optimisticMessages: [],
 };
@@ -47,7 +50,13 @@ const messagesSlice = createSlice({
     // 2. ADD SINGLE MESSAGE - Add new message while preserving previous state
     addMessage: (state, action: PayloadAction<TMessage>) => {
       const message = action.payload;
-      state.messages.push(message);
+      // Check if message already exists by ID
+      const messageExists = state.messages.some(
+        (msg) => msg._id === message._id
+      );
+      if (!messageExists) {
+        state.messages.push(message);
+      }
     },
 
     // 3. ADD MULTIPLE MESSAGES - For pagination or bulk loading
@@ -69,7 +78,9 @@ const messagesSlice = createSlice({
         state.messages.push(...messages);
       }
     },
-
+    setIsTyping: (state, action: PayloadAction<boolean>) => {
+      state.isTyping = action.payload;
+    },
     // 4. UPDATE MESSAGE - Update existing message (for status changes, edits)
     updateMessage: (
       state,
@@ -97,7 +108,9 @@ const messagesSlice = createSlice({
       action: PayloadAction<TMessage & { tempId: string }>
     ) => {
       const message = action.payload;
-      state.optimisticMessages.push(message);
+      if (message.sender.uid === auth.currentUser?.uid) {
+        state.optimisticMessages.push(message);
+      }
     },
 
     // 6. CONFIRM OPTIMISTIC MESSAGE - Replace temp with real message
@@ -169,6 +182,7 @@ export const {
   removeOptimisticMessage,
   updateMessage,
   deleteMessage,
+  setIsTyping,
   clearMessages,
   clearAllMessages,
   setHasMoreMessages,

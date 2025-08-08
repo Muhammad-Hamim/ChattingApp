@@ -53,8 +53,7 @@ export const registerUser = async (
     return {
       uid: user.uid,
       email: user.email!,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
+      name: user.displayName,
       emailVerified: user.emailVerified,
     };
   } catch (error: unknown) {
@@ -84,8 +83,7 @@ export const loginUser = async (
     return {
       uid: user.uid,
       email: user.email!,
-      displayName: user.displayName,
-      photoURL: user.photoURL,
+      name: user.displayName,
       emailVerified: user.emailVerified,
     };
   } catch (error: unknown) {
@@ -126,8 +124,7 @@ export const onAuthStateChange = (callback: (user: User | null) => void) => {
       const user: User = {
         uid: firebaseUser.uid,
         email: firebaseUser.email!,
-        displayName: firebaseUser.displayName,
-        photoURL: firebaseUser.photoURL,
+        name: firebaseUser.displayName,
         emailVerified: firebaseUser.emailVerified,
       };
       callback(user);

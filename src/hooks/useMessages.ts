@@ -67,7 +67,6 @@ export const useMessages = (conversationId: string | undefined) => {
       tempId?: string;
     }) => {
       console.log("📨 New message from server:", messageData);
-
       if (messageData.message.conversation_id === conversationId) {
         // ✅ Check if this is OUR message with tempId (optimistic confirmation)
         if (
@@ -94,6 +93,11 @@ export const useMessages = (conversationId: string | undefined) => {
           );
           if (!messageExists) {
             dispatch(addMessage(messageData.message));
+            //update message status to delivered
+            socket.emit("update-message-status", {
+              messageId: messageData.message._id,
+              status: "delivered",
+            });
           }
         }
         // ✅ If it's our message without tempId, ignore it (already handled by optimistic)
