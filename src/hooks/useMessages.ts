@@ -7,8 +7,8 @@ import {
   addMessage,
   setLoading,
   setError,
-  confirmOptimisticMessage,
   removeOptimisticMessage,
+  updateMessageStatus,
 } from "@/redux/messages/messagesSlice";
 import { socket } from "@/socket/socket";
 import type { TMessage } from "@/types/message";
@@ -68,22 +68,7 @@ export const useMessages = (conversationId: string | undefined) => {
     }) => {
       console.log("📨 New message from server:", messageData);
       if (messageData.message.conversation_id === conversationId) {
-        // ✅ Check if this is OUR message with tempId (optimistic confirmation)
-        if (
-          messageData?.tempId &&
-          messageData.message.sender?.uid === currentUserId
-        ) {
-          // This is confirmation of our sent message - replace optimistic
-          console.log("🔄 Confirming optimistic message:", messageData.tempId);
-          dispatch(
-            confirmOptimisticMessage({
-              tempId: messageData.tempId,
-              realMessage: messageData.message,
-            })
-          );
-        }
-        // ✅ This is a message from someone else OR our message without tempId
-        else if (messageData.message.sender?.uid !== currentUserId) {
+        if (messageData.message.sender?.uid !== currentUserId) {
           // Only add if it's NOT our message (prevent duplicates)
           console.log("📨 Adding message from other user");
 
@@ -93,10 +78,8 @@ export const useMessages = (conversationId: string | undefined) => {
           );
           if (!messageExists) {
             dispatch(addMessage(messageData.message));
-            //update message status to delivered
-            socket.emit("update-message-status", {
+            socket.emit("message-delivered", {
               messageId: messageData.message._id,
-              status: "delivered",
             });
           }
         }
@@ -119,13 +102,33 @@ export const useMessages = (conversationId: string | undefined) => {
         description: errorData.message || "Failed to send message",
       });
     };
+    const handleOnConnectMessageStatusUpdate = (data: {
+      messageId: string;
+    }) => {
+      dispatch(
+        updateMessageStatus({ messageId: data.messageId, status: "delivered" })
+      );
+    };
+
+    const handleMessageStatusUpdate = (data: {
+      messageId: string;
+      status: "delivered" | "read";
+    }) => {
+      dispatch(
+        updateMessageStatus({ messageId: data.messageId, status: data.status })
+      );
+    };
 
     socket.on("new-message", handleNewMessage);
     socket.on("message-error", handleMessageError);
+    socket.on("mark-message-delivered", handleOnConnectMessageStatusUpdate);
+    socket.on("message-status-update", handleMessageStatusUpdate);
 
     return () => {
       socket.off("new-message", handleNewMessage);
       socket.off("message-error", handleMessageError);
+      socket.off("mark-message-delivered", handleOnConnectMessageStatusUpdate);
+      socket.off("message-status-update", handleMessageStatusUpdate);
     };
   }, [conversationId, dispatch, messages]); // Added messages to dependencies
 

@@ -8,6 +8,7 @@ import { socket } from "@/socket/socket";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   addOptimisticMessage,
+  confirmOptimisticMessage,
   removeOptimisticMessage,
   setIsTyping,
 } from "@/redux/messages/messagesSlice";
@@ -241,8 +242,14 @@ const MessageInput = () => {
       },
       (response: Record<string, unknown>) => {
         setIsSending(false);
-        if (response.success) {
+        if (response.success && response.tempId && response.message) {
           console.log("✅ Message sent successfully");
+          dispatch(
+            confirmOptimisticMessage({
+              tempId: response.tempId as string,
+              realMessage: response.message as TMessage,
+            })
+          );
         } else {
           console.error("❌ Failed to send message:", response.error);
           // Remove optimistic message on failure

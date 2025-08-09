@@ -136,6 +136,16 @@ const messagesSlice = createSlice({
         (msg) => msg.tempId !== tempId
       );
     },
+    updateMessageStatus: (
+      state,
+      action: PayloadAction<{ messageId: string; status: "delivered" | "read" }>
+    ) => {
+      const { messageId, status } = action.payload;
+      const message = state.messages.find((msg) => msg._id === messageId);
+      if (message) {
+        message.status = status;
+      }
+    },
     // 8. DELETE MESSAGE
     deleteMessage: (state, action: PayloadAction<string>) => {
       const messageId = action.payload;
@@ -179,6 +189,7 @@ export const {
   addMessages,
   addOptimisticMessage,
   confirmOptimisticMessage,
+  updateMessageStatus,
   removeOptimisticMessage,
   updateMessage,
   deleteMessage,
